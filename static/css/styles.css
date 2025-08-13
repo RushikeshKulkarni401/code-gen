@@ -1,0 +1,446 @@
+:root {
+    --editor-bg: #282c34;
+    --editor-border: #3a3f4b;
+    --editor-text: #abb2bf;
+    --panel-bg: #21252b;
+    --panel-header: #2c313a;
+    --accent-color: #528bff;
+    --editor-selection: #61afef4d;
+    --editor-gutter: #21252b;
+    --editor-gutter-text: #636d83;
+    --editor-gutter-border: #2c313a;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Fira Code', monospace;
+    height: 100vh;
+    background-color: var(--editor-bg);
+    color: var(--editor-text);
+    overflow: hidden;
+}
+
+.app-container {
+    display: flex;
+    height: 100vh;
+}
+
+/* Editor Section */
+.editor-section {
+    width: 75%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.editor-header {
+    padding: 8px 15px;
+    background-color: var(--panel-header);
+    border-bottom: 1px solid var(--editor-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.editor-wrapper {
+    height: calc(100% - 41px);
+    overflow: hidden;
+}
+
+.CodeMirror {
+    height: 100% ;
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    background-color: var(--editor-bg);
+    color: var(--editor-text);
+}
+
+
+.CodeMirror-gutters {
+    background-color: var(--editor-gutter);
+    border-right: 1px solid var(--editor-gutter-border);
+    min-width: 42px;
+}
+
+.CodeMirror-linenumber {
+    color: var(--editor-gutter-text) ;
+    padding: 0px 15px 0 20px ;
+    text-align: right ;
+    min-width: 20px ;
+    background-color: var(--editor-gutter);
+}
+
+.CodeMirror-cursor {
+    border-left: 2px solid var(--editor-cursor) ;
+}
+
+.CodeMirror-selected {
+    background: var(--editor-selection) ;
+}
+
+.CodeMirror-focused .CodeMirror-selected {
+    background: var(--editor-selection) ;
+}
+
+/* White Cursor */
+.CodeMirror-cursor {
+    border-left: 1px solid #dbc7c7 ;
+}
+
+/* Syntax Highlighting Colors */
+.cm-s-default .cm-keyword { color: #c678dd; }
+.cm-s-default .cm-builtin { color: #e06c75; }
+.cm-s-default .cm-number { color: #d19a66; }
+.cm-s-default .cm-string { color: #98c379; }
+.cm-s-default .cm-comment { color: #5ca850; font-style: italic; }
+.cm-s-default .cm-variable { color: #e5c07b; }
+.cm-s-default .cm-def { color: #61afef; }
+.cm-s-default .cm-operator { color: #56b6c2; }
+
+
+/* Run Button */
+.run-button {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.run-button:hover {
+    background-color: #3a7bff;
+}
+
+/* Get suggestions button */
+#code-suggestion-btn {
+    position: absolute;
+    z-index: 1000;
+    display: none;
+    
+    /* Premium dark blue gradient */
+    background: linear-gradient(135deg, #3d6cb9 0%, #2a56a1 100%);
+    color: rgba(255, 255, 255, 0.96);
+    border: none;
+    border-radius: 5px;
+    padding: 7px 14px;
+    font-family: 'Fira Code', 'SF Mono', Menlo, monospace;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 
+        0 1.5px 3px rgba(0,0,0,0.12),
+        0 3px 10px rgba(58, 108, 185, 0.15);
+    
+    /* Ultra-smooth animations */
+    transition: all 0.22s cubic-bezier(0.21, 1.02, 0.73, 1);
+    opacity: 0;
+    transform: translateY(1px) scale(0.98);
+    
+    /* Premium details */
+    border: 1px solid rgba(255,255,255,0.12);
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+#code-suggestion-btn.visible {
+    display: flex;
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+#code-suggestion-btn:hover {
+    background: linear-gradient(135deg, #3463ae 0%, #224d96 100%);
+    box-shadow: 
+        0 2px 5px rgba(0,0,0,0.15),
+        0 4px 12px rgba(58, 108, 185, 0.2);
+    transform: translateY(-0.5px) scale(1.02);
+}
+
+#code-suggestion-btn:active {
+    transform: translateY(0) scale(1);
+    background: linear-gradient(135deg, #2a56a1 0%, #1a4290 100%);
+    box-shadow: 
+        0 1px 3px rgba(0,0,0,0.12),
+        0 3px 8px rgba(58, 108, 185, 0.15);
+}
+
+/* Premium icon styling */
+#code-suggestion-btn::before {
+    content: "✨";
+    font-size: 13px;
+    opacity: 0.9;
+    filter: drop-shadow(0 0.5px 1px rgba(0,0,0,0.1));
+    transition: transform 0.2s ease;
+}
+
+#code-suggestion-btn:hover::before {
+    transform: rotate(10deg);
+}
+
+/* Sublime entrance animation */
+@keyframes sublime-entrance {
+    0% { 
+        opacity: 0;
+        transform: translateY(3px) scale(0.96);
+        box-shadow: 0 0 0 0 rgba(58, 108, 185, 0);
+    }
+    100% { 
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+#code-suggestion-btn.visible {
+    animation: sublime-entrance 0.35s cubic-bezier(0.21, 1.02, 0.73, 1) forwards;
+}
+
+
+/* Suggestions Panel */
+.suggestions-panel {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 380px;
+    max-height: 60vh;
+    background: #21252b;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    border: 1px solid #3a3f4b;
+    display: flex;
+    flex-direction: column;
+    z-index: 999;
+    transform: translateY(10px);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.suggestions-panel.visible {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Panel Header */
+.panel-header {
+    padding: 12px 16px;
+    background: #2c313a;
+    border-bottom: 1px solid #3a3f4b;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 8px 8px 0 0;
+}
+
+.panel-header h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #d7dae0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.panel-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.panel-actions button {
+    background: none;
+    border: none;
+    color: #9da5b4;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.panel-actions button:hover {
+    background: rgba(255,255,255,0.05);
+    color: #d7dae0;
+}
+
+/* Suggestions Container */
+.suggestions-container {
+    padding: 12px;
+    overflow-y: auto;
+    flex-grow: 1;
+    scrollbar-width: thin; 
+    scrollbar-color: #3a3f4b #1e2227; 
+}
+
+
+/* WebKit Scrollbar Styling */
+.suggestions-container::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.suggestions-container::-webkit-scrollbar-thumb {
+    background: #3a3f4b; 
+    border-radius: 4px;
+}
+
+.suggestions-container::-webkit-scrollbar-track {
+    background: #1e2227; /* Track color (matches suggestion-code bg) */
+    border-radius: 4px;
+}
+
+.suggestion-item {
+    position: relative;
+    background: #282c34;
+    border-radius: 6px;
+    border: 1px solid #3a3f4b;
+    margin-bottom: 12px;
+    overflow: hidden; /* Hides scrollbar that extends beyond container */
+}
+
+
+.suggestion-code {
+    padding: 12px;
+    background: #1e2227;
+    overflow-x: auto; /* Allows horizontal scrolling */
+    scrollbar-width: none; /* Hides scrollbar in Firefox */
+    max-height: 200px; /* Optional: Limit height with vertical scroll */
+}
+
+
+.suggestion-code::-webkit-scrollbar {
+    display: none;
+}
+
+.suggestion-code pre {
+    margin: 0;
+    font-family: 'Fira Code', monospace;
+    font-size: 12px;
+    line-height: 1.4;
+    color: #abb2bf; 
+    white-space: pre;       /* Prevent text wrapping */
+    min-width: fit-content; /* Allow content to expand */
+    display: inline-block; /* Needed for fit-content */
+    padding-bottom: 40px; /* Space for buttons */
+}
+
+.suggestion-actions {
+    position: sticky;
+    bottom: 0;
+    padding: 8px;
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    background: #2a2e36; /* Slightly lighter than item bg */
+    border-top: 1px solid #3a3f4b;
+    z-index: 2;
+}
+
+.suggestion-actions button {
+    pointer-events: auto; /* Re-enable clicks for buttons */
+    /* Rest of your existing button styles */
+    background: #3a3f4b;
+    border: none;
+    color: #d7dae0;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-family: 'Fira Code', monospace;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+
+.suggestion-actions button:hover {
+    background: #4a4f5b;
+}
+
+.suggestion-actions .insert-btn {
+    background: #528bff;
+    color: white;
+}
+
+.suggestion-actions .insert-btn:hover {
+    background: #3a7bff;
+}
+
+/* Loading Animation Styles */
+.suggestions-container.loading {
+    position: relative;
+}
+
+.loading-state {
+    opacity: 0.7;
+}
+
+.code-line-shimmer,
+.code-block-shimmer {
+    background: #2a2e36;
+    border-radius: 3px;
+    height: 14px;
+    margin-bottom: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.code-block-shimmer {
+    height: 60px;
+    margin-top: 12px;
+}
+
+.code-line-shimmer::after,
+.code-block-shimmer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(58, 63, 75, 0.5) 50%, 
+        transparent 100%);
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Disabled buttons during loading */
+.suggestion-actions button[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Copy Button Styles */
+.copy-button {
+    background: #2e6ce7;
+    color: #d7dae0;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-family: 'Fira Code', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.copy-button:hover {
+    background: #3a7bff;
+}
+
+.copy-button:active {
+    transform: scale(0.98);
+}

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Code Editor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <div class="editor-section">
+            <div class="editor-header">
+                <span class="file-name">script.py</span>
+                <div class="editor-controls">
+                    <button class="copy-button">⎘ Copy</button>
+                </div>
+            </div>
+            <div class="editor-wrapper">
+                <textarea id="code-editor"># Start typing your Python code here</textarea>
+            </div>
+        </div>
+        
+        <div class="suggestions-panel">
+            <div class="panel-header">
+                <h3>✨ AI Suggestions</h3>
+                <div class="panel-actions">
+                    <button class="refresh-btn">↻ Refresh</button>
+                    <button class="close-btn">×</button>
+                </div>
+            </div>
+            <div class="suggestions-container loading">
+                <!-- Loading State -->
+                <div class="suggestion-item loading-state">
+                    <div class="suggestion-code">
+                        <div class="code-line-shimmer"></div>
+                        <div class="code-line-shimmer" style="width: 80%"></div>
+                        <div class="code-line-shimmer" style="width: 60%"></div>
+                        <div class="code-line-shimmer" style="width: 90%"></div>
+                    </div>
+                    <div class="suggestion-actions">
+                        <button class="insert-btn" disabled>Insert</button>
+                        <button class="copy-btn" disabled>Copy</button>
+                    </div>
+                </div>
+                
+                <!-- Second Loading Item -->
+                <div class="suggestion-item loading-state">
+                    <div class="suggestion-code">
+                        <div class="code-line-shimmer"></div>
+                        <div class="code-line-shimmer"></div>
+                        <div class="code-block-shimmer"></div>
+                    </div>
+                    <div class="suggestion-actions">
+                        <button class="insert-btn" disabled>Insert</button>
+                        <button class="copy-btn" disabled>Copy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CodeMirror and Custom JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/addon/edit/matchbrackets.min.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
