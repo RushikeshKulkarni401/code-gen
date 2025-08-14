@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
+
 <body>
     <div class="app-container">
         <div class="editor-section">
@@ -20,7 +22,7 @@
                 <textarea id="code-editor"># Start typing your Python code here</textarea>
             </div>
         </div>
-        
+
         <div class="suggestions-panel">
             <div class="panel-header">
                 <h3>✨ AI Suggestions</h3>
@@ -43,7 +45,7 @@
                         <button class="copy-btn" disabled>Copy</button>
                     </div>
                 </div>
-                
+
                 <!-- Second Loading Item -->
                 <div class="suggestion-item loading-state">
                     <div class="suggestion-code">
@@ -60,10 +62,29 @@
         </div>
     </div>
 
+    <template id="suggestion-template">
+        <div class="suggestion-item">
+            <button class="info-btn"><span class="info-icon"></span></button>
+            <div class="suggestion-code">
+                <pre><code></code></pre>
+            </div>
+            <div class="meta-panel hidden">
+                <div class="meta-explanation"></div>
+                <div class="meta-score"></div>
+                <div class="meta-tags"></div>
+            </div>
+            <div class="suggestion-actions">
+                <button class="insert-btn">Insert</button>
+                <button class="copy-btn">Copy</button>
+            </div>
+        </div>
+    </template>
+
     <!-- CodeMirror and Custom JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/mode/python/python.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/addon/edit/matchbrackets.min.js"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
+
 </html>
