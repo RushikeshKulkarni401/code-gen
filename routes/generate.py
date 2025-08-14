@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.code_generation_service import generate_code_from_query
+from services.code_generation import generate_code_from_query
 
 generate_bp = Blueprint("generate", __name__)
 

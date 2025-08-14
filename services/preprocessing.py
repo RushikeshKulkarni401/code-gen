@@ -22,6 +22,6 @@ def preprocess_query(query):
     # Join back to string
     cleaned_query = " ".join(tokens)
 
-    logging.info("cleaned query", cleaned_query)
+    print(f"Preprocessed query: {cleaned_query}")
 
     return cleaned_query
