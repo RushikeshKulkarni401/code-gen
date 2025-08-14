@@ -344,8 +344,7 @@ body {
 }
 
 .suggestion-actions button {
-    pointer-events: auto; /* Re-enable clicks for buttons */
-    /* Rest of your existing button styles */
+    pointer-events: auto; 
     background: #3a3f4b;
     border: none;
     color: #d7dae0;
@@ -365,6 +364,11 @@ body {
 .suggestion-actions .insert-btn {
     background: #528bff;
     color: white;
+    min-width: 70px;
+}
+
+.suggestion-actions .copy-btn {
+    min-width: 70px;
 }
 
 .suggestion-actions .insert-btn:hover {
@@ -443,4 +447,152 @@ body {
 
 .copy-button:active {
     transform: scale(0.98);
+}
+
+/* Enhanced info button styling */
+/* Updated Info Button Styles */
+.info-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #67d0ea;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 2;
+}
+
+.info-btn:hover {
+    background: #f1f3f4;
+    border-color: #d2d6dc;
+}
+
+.info-btn.active {
+    background: #e8eaed;
+} 
+
+/* Alternative: Using SVG icon */
+.info-icon {
+    width: 20px;
+    height: 20px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%235f6368'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+} 
+
+.meta-panel {
+    /* Reset inactive state */
+    padding: 0;
+    margin: 0;
+    border: none;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.meta-panel.active {
+    /* Active state styling */
+    padding: 16px;
+    margin: 12px 0;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 
+        0 1px 2px rgba(0, 0, 0, 0.05),
+        0 4px 12px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(229, 231, 235, 0.8);
+    max-height: 600px;
+    opacity: 1;
+    backdrop-filter: blur(4px);
+}
+
+.meta-explanation {
+    margin-bottom: 14px;
+    font-size: 0.92em;
+    line-height: 1.6;
+    color: #1f2937;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(229, 231, 235, 0.6);
+    font-weight: 450; /* Semi-bold */
+}
+
+.meta-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 12px 0 0 0;
+}
+
+.meta-score {
+    display: flex;
+    align-items: center;
+    font-size: 0.86em;
+    color: #4b5563;
+    margin-top: 12px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+
+.tag {
+    background: rgba(239, 246, 255, 0.8);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.78em;
+    color: #3b82f6;
+    font-weight: 500;
+    border: 1px solid rgba(191, 219, 254, 0.5);
+    transition: all 0.2s ease;
+    backdrop-filter: blur(4px);
+}
+
+.tag:hover {
+    background: rgba(219, 234, 254, 0.8);
+    transform: translateY(-1px);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.score-stars {
+    display: inline-flex;
+    margin-left: 8px;
+    gap: 2px;
+}
+
+.score-stars .star {
+    color: #e5e7eb;
+    font-size: 1.1em;
+    transition: color 0.2s ease;
+}
+
+.score-stars .star.filled {
+    color: #f59e0b;
+    text-shadow: 0 1px 2px rgba(245, 158, 11, 0.2);
+}
+
+/* Enhanced animations */
+@keyframes panelSlideIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.meta-panel.active {
+    animation: panelSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Micro-interactions */
+.meta-panel.active:hover {
+    box-shadow: 
+        0 2px 4px rgba(0, 0, 0, 0.05),
+        0 6px 16px rgba(0, 0, 0, 0.04);
+    border-color: rgba(209, 213, 219, 0.6);
 }

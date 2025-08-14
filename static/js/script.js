@@ -146,20 +146,37 @@ document.addEventListener('DOMContentLoaded', function() {
         // Hide the panel
         panel.classList.remove('visible');
     }
+    /*
+    async function fetchSuggestions(commentText) {
+        try {
+            const response = await fetch('http://127.0.0.1:5000/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    query: commentText  // Changed from 'comment' to 'query' to match your Flask endpoint
+                })
+            });
 
-    function fetchSuggestions(commentText) {
-        // Replace with actual API call
-        return new Promise(resolve => {
-            setTimeout(() => {
-                resolve([{
-                    code: `# Optimized version based on: "${commentText}"\ndef calculate_stats(data):\n    return {\n        'mean': sum(data)/len(data),\n        'max': max(data),\n        'min': min(data)\n    }`,
-                    explanation: "This optimized version calculates multiple statistics in a single pass"
-                }, {
-                    code: `# Optimized version based on: "${commentText}"\ndef calculate_stats(data):\n    return {\n        'mean': sum(data)/len(data),\n        'max': max(data),\n        'min': min(data)\n    }`,
-                    explanation: "This optimized version calculates multiple statistics in a single pass"
-                }]);
-            }, 800);
-        });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log("API response data:", data);
+            
+            // Transform the API response to match our expected format
+            const suggestions = data.map(item => ({
+                code: item.body || item.code,  // Use 'body' from API or fallback to 'code'
+                explanation: item.summary || item.explanation  // Use 'summary' from API or fallback to 'explanation'
+            }));
+
+            return suggestions;
+        } catch (error) {
+            console.error('Error fetching suggestions:', error);
+            return []; // Return empty array on error
+        }
     }
 
     function renderSuggestions(suggestions) {
@@ -167,6 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
         container.innerHTML = '';
         
         suggestions.forEach(suggestion => {
+            console.log("Suggestion", suggestion);
             const item = document.createElement('div');
             item.className = 'suggestion-item';
             item.innerHTML = `
@@ -197,7 +215,151 @@ document.addEventListener('DOMContentLoaded', function() {
                 hideSuggestionsPanel();
             });
         });
+    }*/
+    async function fetchSuggestions(commentText) {
+        try {
+            const response = await fetch('http://127.0.0.1:5000/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    query: commentText
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log("API response data:", data);
+            
+            // Transform API response to include all metadata
+            const suggestions = data.map(item => ({
+                code: item.body || item.code,
+                explanation: item.summary || item.explanation || 'No explanation provided',
+                tags: item.tags || ['general'],  // Default tag if none provided
+                score: item.score !== undefined ? item.score : null  // Handle missing score
+            }));
+
+            return suggestions;
+        } catch (error) {
+            console.error('Error fetching suggestions:', error);
+            return [];
+        }
     }
+
+    function renderSuggestions(suggestions) {
+        const container = document.querySelector('.suggestions-container');
+        container.innerHTML = '';
+        
+        if (suggestions.length === 0) {
+            container.innerHTML = '<div class="no-suggestions">No suggestions found</div>';
+            return;
+        }
+
+        suggestions.forEach(suggestion => {
+            const item = document.createElement('div');
+            item.className = 'suggestion-item';
+            
+            // Create info button (no separate header)
+            const infoBtn = document.createElement('button');
+            infoBtn.className = 'info-btn';
+            infoBtn.innerHTML = '<span class="info-icon"></span>';
+            item.appendChild(infoBtn);
+            
+            // Create code block
+            const codeBlock = document.createElement('div');
+            codeBlock.className = 'suggestion-code';
+            const pre = document.createElement('pre');
+            const code = document.createElement('code');
+            code.textContent = suggestion.code;
+            pre.appendChild(code);
+            codeBlock.appendChild(pre);
+            
+            // Create metadata panel (initially hidden)
+            const metaPanel = document.createElement('div');
+            metaPanel.className = 'meta-panel hidden';
+            
+            if (suggestion.explanation) {
+                const explanation = document.createElement('div');
+                explanation.className = 'meta-explanation';
+                explanation.textContent = suggestion.explanation;
+                metaPanel.appendChild(explanation);
+            }
+            
+            
+            if (suggestion.score !== undefined && suggestion.score !== null) {
+                const score = document.createElement('div');
+                score.className = 'meta-score';
+                score.innerHTML = `<strong>Quality Score:</strong> ${renderScoreStars(suggestion.score)}`;
+                metaPanel.appendChild(score);
+            }
+
+            if (suggestion.tags && suggestion.tags.length > 0) {
+                const tags = document.createElement('div');
+                tags.className = 'meta-tags';
+                tags.innerHTML = suggestion.tags.map(tag => 
+                    `<span class="tag">${tag}</span>`
+                ).join(' ');
+                metaPanel.appendChild(tags);
+            }
+            
+            // Create action buttons
+            const actions = document.createElement('div');
+            actions.className = 'suggestion-actions';
+            const insertBtn = document.createElement('button');
+            insertBtn.className = 'insert-btn';
+            insertBtn.textContent = 'Insert';
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'copy-btn';
+            copyBtn.textContent = 'Copy';
+            
+            actions.append(insertBtn, copyBtn);
+            item.append(codeBlock, metaPanel, actions);
+            container.appendChild(item);
+
+            // Add event listeners
+            infoBtn.addEventListener('click', () => {
+                metaPanel.classList.toggle('active');
+                infoBtn.classList.toggle('active');
+            });
+            
+            insertBtn.addEventListener('click', () => insertCode(suggestion.code));
+            copyBtn.addEventListener('click', () => copyToClipboard(copyBtn, suggestion.code));
+        });
+    }
+
+    function renderScoreStars(score) {
+        const maxStars = 5;
+        let stars = '';
+        for (let i = 1; i <= maxStars; i++) {
+            const filled = i <= Math.round(score);
+            stars += `<span class="star ${filled ? 'filled' : ''}">${filled ? '★' : '☆'}</span>`;
+        }
+        return `<span class="score-stars">${stars}</span>`;
+    }
+
+    // Helper functions remain the same
+    function insertCode(code) {
+        console.log('Inserting code:', code);
+        insertCodeAtCursor();
+        hideSuggestionsPanel();
+    }
+
+    function copyToClipboard(copyBtn, text) {
+        navigator.clipboard.writeText(text)
+            .then(() => {
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = 'Copied!';
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                }, 2000);
+            })
+            .catch(err => console.error('Failed to copy code:', err));
+    }
+
 
     function insertCodeAtCursor(code) {
         const cursor = editor.getCursor();
