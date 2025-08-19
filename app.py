@@ -1,8 +1,10 @@
 from flask import Flask, render_template
+from flask_cors import CORS 
 from routes.generate import generate_bp
 from services.embedding import EmbeddingService
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 embedding_service = EmbeddingService()
 
 # Index route (directly in app.py)

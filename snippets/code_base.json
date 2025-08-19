@@ -1,32 +1,32 @@
 [
   {
-    "title": "Pandas Missing Value Imputation",
-    "summary": "Replace missing values in a DataFrame with column means or medians.",
-    "body": "import pandas as pd\n\ndef impute_missing_values(df):\n    for col in df.columns:\n        if df[col].dtype in ['float64', 'int64']:\n            df[col].fillna(df[col].median(), inplace=True)\n    return df",
-    "tags": ["data-cleaning", "pandas", "missing-data"]
+    "title": "Load Classification Dataset",
+    "summary": "Load and explore a classification dataset from sklearn",
+    "body": "from sklearn.datasets import load_breast_cancer\nfrom sklearn.model_selection import train_test_split\nimport pandas as pd\n\n# Load dataset\ndata = load_breast_cancer()\nX, y = data.data, data.target\n\n# Create DataFrame for exploration\ndf = pd.DataFrame(X, columns=data.feature_names)\ndf['target'] = y\nprint(f\"Dataset shape: {df.shape}\")\nprint(f\"Target distribution:\\n{df['target'].value_counts()}\")",
+    "tags": ["data-loading", "exploration", "sklearn", "classification"]
   },
   {
-    "title": "Matplotlib Histogram with Custom Bins",
-    "summary": "Plot a histogram with customized bin edges and styling.",
-    "body": "import matplotlib.pyplot as plt\n\ndef plot_histogram(data, bins=10, color='skyblue'):\n    plt.hist(data, bins=bins, color=color, edgecolor='black')\n    plt.xlabel('Values')\n    plt.ylabel('Frequency')\n    plt.title('Distribution of Data')\n    plt.show()",
-    "tags": ["data-cleaning", "pandas", "missing-data"]
+    "title": "Train-Test Split Classification",
+    "summary": "Split data into training and testing sets with stratification",
+    "body": "# Split the data\nX_train, X_test, y_train, y_test = train_test_split(\n    X, y, test_size=0.2, random_state=42, stratify=y\n)\n\nprint(f\"Training set: {X_train.shape}, {y_train.shape}\")\nprint(f\"Test set: {X_test.shape}, {y_test.shape}\")\nprint(f\"Train target distribution: {pd.Series(y_train).value_counts().to_dict()}\")",
+    "tags": ["data-splitting", "sklearn", "classification"]
   },
   {
-    "title": "Z-Score Normalization",
-    "summary": "Normalize data using Z-score standardization (mean=0, std=1).",
-    "body": "from sklearn.preprocessing import StandardScaler\n\ndef standardize_data(data):\n    scaler = StandardScaler()\n    return scaler.fit_transform(data)",
-    "tags": ["data-cleaning", "pandas", "missing-data"]
+    "title": "StandardScaler for Classification",
+    "summary": "Scale features using StandardScaler for better model performance",
+    "body": "from sklearn.preprocessing import StandardScaler\n\n# Scale the features\nscaler = StandardScaler()\nX_train_scaled = scaler.fit_transform(X_train)\nX_test_scaled = scaler.transform(X_test)\n\nprint(\"Features scaled successfully\")\nprint(f\"Training mean: {X_train_scaled.mean():.3f}, std: {X_train_scaled.std():.3f}\")",
+    "tags": ["preprocessing", "scaling", "sklearn"]
   },
   {
-    "title": "One-Hot Encoding for Categorical Variables",
-    "summary": "Convert categorical variables into binary columns using pandas.",
-    "body": "import pandas as pd\n\ndef one_hot_encode(df, columns):\n    return pd.get_dummies(df, columns=columns)",
-    "tags": ["data-cleaning", "pandas", "missing-data"]
+    "title": "Random Forest Classifier",
+    "summary": "Train a Random Forest classifier with hyperparameters",
+    "body": "from sklearn.ensemble import RandomForestClassifier\nfrom sklearn.metrics import accuracy_score, classification_report\n\n# Train Random Forest\nrf_model = RandomForestClassifier(\n    n_estimators=100,\n    max_depth=10,\n    random_state=42\n)\nrf_model.fit(X_train_scaled, y_train)\n\n# Predictions\ny_pred = rf_model.predict(X_test_scaled)\n\nprint(f\"Accuracy: {accuracy_score(y_test, y_pred):.3f}\")\nprint(\"Classification Report:\")\nprint(classification_report(y_test, y_pred))",
+    "tags": ["model-training", "random-forest", "classification", "sklearn"]
   },
   {
-    "title": "Train-Test Split",
-    "summary": "Split dataset into training and testing subsets.",
-    "body": "from sklearn.model_selection import train_test_split\n\nX_train, X_test, y_train, y_test = train_test_split(\n    X, y, test_size=0.2, random_state=42\n)",
-    "tags": ["data-cleaning", "pandas", "missing-data"]
+    "title": "Classification Model Evaluation",
+    "summary": "Comprehensive evaluation with confusion matrix and ROC curve",
+    "body": "from sklearn.metrics import confusion_matrix, roc_curve, auc\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n\n# Confusion Matrix\ncm = confusion_matrix(y_test, y_pred)\nsns.heatmap(cm, annot=True, fmt='d', cmap='Blues')\nplt.title('Confusion Matrix')\nplt.show()\n\n# ROC Curve\ny_prob = rf_model.predict_proba(X_test_scaled)[:, 1]\nfpr, tpr, _ = roc_curve(y_test, y_prob)\nroc_auc = auc(fpr, tpr)\n\nplt.plot(fpr, tpr, label=f'ROC curve (AUC = {roc_auc:.2f})')\nplt.plot([0, 1], [0, 1], 'k--')\nplt.xlabel('False Positive Rate')\nplt.ylabel('True Positive Rate')\nplt.title('ROC Curve')\nplt.legend()\nplt.show()",
+    "tags": ["model-evaluation", "metrics", "visualization"]
   }
 ]

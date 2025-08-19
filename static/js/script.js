@@ -168,6 +168,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Transform API response to include all metadata
             const suggestions = data.map(item => ({
+                title: item.title || 'Untitled',
                 code: item.body || item.code,
                 explanation: item.summary || item.explanation || 'No explanation provided',
                 tags: item.tags || ['general'], // Default tag if none provided
@@ -234,7 +235,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 infoBtn.classList.toggle('active');
             });
 
-            insertBtn.addEventListener('click', () => insertCode(suggestion.code));
+            insertBtn.addEventListener('click', () => insertCode(suggestion.title, suggestion.code));
             copyBtn.addEventListener('click', () => copyToClipboard(copyBtn, suggestion.code));
 
             container.appendChild(clone);
@@ -252,9 +253,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Helper functions remain the same
-    function insertCode(code) {
+    function insertCode(title, code) {
         console.log('Inserting code:', code);
-        insertCodeAtCursor(code);
+        insertCodeAtCursor(title, code);
         hideSuggestionsPanel();
     }
 
@@ -271,10 +272,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-    function insertCodeAtCursor(code) {
+    function insertCodeAtCursor(title, code) {
         console.log("insert called with code: ", code);
         const cursor = editor.getCursor();
-        editor.replaceRange(code, cursor);
+        editor.replaceRange("\n# " + title + '\n' + code, cursor);
     }
 
     // Close button

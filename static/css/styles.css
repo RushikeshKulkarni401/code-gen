@@ -59,6 +59,28 @@ body {
     line-height: 1.5;
     background-color: var(--editor-bg);
     color: var(--editor-text);
+
+    scrollbar-width: thin;
+    scrollbar-color: #4a5568 var(--editor-bg);
+}
+
+/* For Webkit browsers (Chrome, Safari, Edge) */
+.CodeMirror::-webkit-scrollbar {
+    width: 12px;
+}
+
+.CodeMirror::-webkit-scrollbar-track {
+    background: var(--editor-bg);
+}
+
+.CodeMirror::-webkit-scrollbar-thumb {
+    background-color: #4a5568;
+    border-radius: 6px;
+    border: 3px solid var(--editor-bg);
+}
+
+.CodeMirror::-webkit-scrollbar-thumb:hover {
+    background-color: #718096;
 }
 
 
