@@ -1,8 +1,11 @@
+# embeddings.py
+
 import json
-import torch
+import logging
 import numpy as np
 from pathlib import Path
-from transformers import AutoTokenizer, AutoModel
+from sentence_transformers import SentenceTransformer
+from services.preprocessing import preprocess_snippet_for_embedding
 
 class EmbeddingService:
      
@@ -15,60 +18,72 @@ class EmbeddingService:
         return cls._instance
 
     def _initialize(self):
-        """One-time initialization"""
-        self.tokenizer = AutoTokenizer.from_pretrained("microsoft/codebert-base")
-        self.model = AutoModel.from_pretrained("microsoft/codebert-base")
+        """One-time initialization with Sentence Transformers"""
+        print("Loading Sentence Transformer model...")
+        # Using a lightweight model good for semantic similarity
+        self.model = SentenceTransformer('all-MiniLM-L6-v2')
+        print("Model loaded successfully!")
         self.snippet_embeddings = self._load_embeddings()
 
     def _load_embeddings(self):
-        """Load snippets and precompute embeddings on startup"""
+        """Load snippets and precompute embeddings with enhanced preprocessing"""
         snippets_path = Path(__file__).parent.parent / "snippets" / "code_base.json"
         with open(snippets_path, "r") as f:
             snippets = json.load(f)
         
         embeddings = {}
         for snippet in snippets:
-            # Use title + summary as embedding text
-            text = f"{snippet['title']}: {snippet['summary']}"
-            print(f"Processing text: {text}")
+            # Use enhanced preprocessing for title + summary
+            embedding_text = preprocess_snippet_for_embedding(snippet)
+            print(f"Processing: {snippet['title']}")
+            print(f"Preprocessed text: '{embedding_text}'")
+            
             embeddings[snippet["title"]] = {
-                "embedding": self._get_embedding(text),
+                "embedding": self._get_embedding(embedding_text),
                 "body": snippet["body"],
-                "tags": snippet.get("tags", [])
+                "tags": snippet.get("tags", []),
+                "summary": snippet["summary"]  # Store summary for reference
             }
         return embeddings
 
     def _get_embedding(self, text):
-        """Generate CodeBERT embedding for a single text"""
-        inputs = self.tokenizer(text, return_tensors="pt", 
-                              truncation=True, padding=True, 
-                              max_length=128)
-        with torch.no_grad():
-            outputs = self.model(**inputs)
-        return outputs.last_hidden_state.mean(dim=1).squeeze().numpy()
-
-    def find_best_match(self, query):
-        """Compare query against all snippets"""
+        """Generate normalized embedding using Sentence Transformer"""
+        return self.model.encode(text)  # Already normalized by the model
+    
+    def find_best_match(self, query, top_k=3, min_stars=2):
+        """Return top-k matching snippets with minimum star rating filter"""
+        
         query_embedding = self._get_embedding(query)
-        best_match_title, max_score = None, -1
         
+        # Calculate all scores
+        scores = []
         for name, data in self.snippet_embeddings.items():
-            score = np.dot(query_embedding, data["embedding"])
-            print(f"Comparing with {name}: score = {score}")
-            if score > max_score:
-                best_match_title = name
-                max_score = score
-                
-        return {
-            "title": best_match_title,
-            "score": float(max_score),
-            "code": self.snippet_embeddings[best_match_title]["body"],
-            "tags": self.snippet_embeddings[best_match_title]["tags"]
-        }
-        # return {
-        #     "match": "best_match",
-        #     "score": "float(max_score)",
-        #     "code": "self.snippet_embeddings[best_match][\"body\"]",
-        #     "tags": "self.snippet_embeddings[best_match][\"tags\"]"
-        # }
+            similarity = np.dot(query_embedding, data["embedding"])
+            star_rating = max(1, min(5, int(np.ceil(similarity * 5))))
+            scores.append((name, similarity, star_rating))
         
+        # Sort by similarity descending
+        scores.sort(key=lambda x: x[1], reverse=True)
+        
+        # Apply minimum star rating filter
+        filtered_results = []
+        for title, similarity, star_rating in scores:
+            if star_rating >= min_stars:
+                result = {
+                    "title": title,
+                    "summary": self.snippet_embeddings[title]["summary"],
+                    "code": self.snippet_embeddings[title]["body"],
+                    "tags": self.snippet_embeddings[title]["tags"],
+                    "score": star_rating
+                }
+                filtered_results.append(result)
+        
+        # Get top-k results from filtered list
+        top_results = filtered_results[:top_k]
+        
+        # Print results
+        print(f"\nTop-{top_k} matches (min {min_stars}+ stars):")
+        for i, result in enumerate(top_results):
+            print(f"#{i+1}: '{result['title']}' -  Stars: {result['score']}")
+        
+        return top_results
