@@ -67,3 +67,49 @@ It allows users to write **natural language queries** (in English) and automatic
 ![code-gen](https://github.com/user-attachments/assets/79033f0e-db4f-4f51-93e1-da49f9abca00)
 - Full demo available at [Drive link](https://drive.google.com/file/d/1Lh29YmpCo1uTJLJfFRt2larzDWtsU2eM/view?usp=drive_link).
 
+---
+
+## 🚦 Installation & Setup
+
+### Prerequisites
+- Python 3.8+
+- Node.js (optional, if you want to extend frontend build)
+
+### Steps
+```bash
+# Clone repo
+git clone https://github.com/RushikeshKulkarni401/code-gen.git
+cd codegen
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate   # Linux/Mac
+venv\Scripts\activate      # Windows
+
+# Install backend dependencies
+pip install -r requirements.txt
+
+# Run Flask app
+python app.py
+```
+
+Frontend will be available at:  
+👉 `http://localhost:5000`
+
+---
+
+## 📊 Example Queries
+
+- `# Load CSV file and show first 5 rows`
+- `# Plot histogram of age column`
+- `# Train a logistic regression model on dataset X`
+- `# Perform a correlation heatmap for numeric columns`
+
+---
+
+## 🙌 Acknowledgments
+
+- [CodeMirror](https://codemirror.net/) for editor support  
+- [Sentence Transformers](https://www.sbert.net/) for NLP embeddings  
+- Flask community for the backend framework  
+
