@@ -107,6 +107,12 @@ Frontend will be available at:
 
 ---
 
+##  Architecture
+
+<img width="1536" height="1024" alt="code_gen architecture" src="https://github.com/user-attachments/assets/ee8a84dd-5c01-48d1-b456-ae5d5787c6f9" />
+
+---
+
 ## 🙌 Acknowledgments
 
 - [CodeMirror](https://codemirror.net/) for editor support  
